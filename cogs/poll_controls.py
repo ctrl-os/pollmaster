@@ -51,8 +51,10 @@ class PollControls(commands.Cog):
             if query:
                 for limit, pd in enumerate([poll async for poll in query]):
                     if limit >= 30:
-                        print("More than 30 polls due to be closed! Throttling to 30 per 30 sec.")
-                        logger.warning("More than 30 polls due to be closed! Throttling to 30 per 30 sec.")
+                        print(
+                            "More than 30 polls due to be closed! Throttling to 30 per 30 sec.")
+                        logger.warning(
+                            "More than 30 polls due to be closed! Throttling to 30 per 30 sec.")
                         break
 
                     # load poll (this will close the poll if necessary and update the DB)
@@ -65,7 +67,8 @@ class PollControls(commands.Cog):
                     if not p.server:
                         # Bot is not present on that server. Close poll directly in the DB.
                         await self.bot.db.polls.update_one({'_id': p.id}, {'$set': {'open': False}})
-                        logger.info(f"Closed poll on a server ({pd['server_id']}) without Pollmaster being present.")
+                        logger.info(
+                            f"Closed poll on a server ({pd['server_id']}) without Pollmaster being present.")
                         continue
                     # Check if poll was closed and inform the sever if the poll is less than 2 hours past due
                     # (Closing old polls should only happen if the bot was offline for an extended period)
@@ -85,8 +88,10 @@ class PollControls(commands.Cog):
             if query:
                 for limit, pd in enumerate([poll async for poll in query]):
                     if limit >= 10:
-                        print("More than 10 polls due to be closed! Throttling to 10 per 30 sec.")
-                        logger.warning("More than 10 polls due to be closed! Throttling to 10 per 30 sec.")
+                        print(
+                            "More than 10 polls due to be closed! Throttling to 10 per 30 sec.")
+                        logger.warning(
+                            "More than 10 polls due to be closed! Throttling to 10 per 30 sec.")
                         break
 
                     # load poll (this will activate the poll if necessary and update the DB)
@@ -97,7 +102,8 @@ class PollControls(commands.Cog):
                     if not p.server:
                         # Bot is not present on that server. Close poll directly in the DB.
                         await self.bot.db.polls.update_one({'_id': p.id}, {'$set': {'active': True}})
-                        logger.info(f"Activated poll on a server ({pd['server_id']}) without Pollmaster being present.")
+                        logger.info(
+                            f"Activated poll on a server ({pd['server_id']}) without Pollmaster being present.")
                         continue
                     # Check if poll was activated and inform the sever if the poll is less than 2 hours past due
                     # (activating old polls should only happen if the bot was offline for an extended period)
@@ -168,14 +174,16 @@ class PollControls(commands.Cog):
                 return False
 
     async def say_error(self, ctx, error_text, footer_text=None):
-        embed = discord.Embed(title='', description=error_text, colour=SETTINGS.color)
+        embed = discord.Embed(
+            title='', description=error_text, colour=SETTINGS.color)
         embed.set_author(name='Error', icon_url=SETTINGS.author_icon)
         if footer_text is not None:
             embed.set_footer(text=footer_text)
         await ctx.send(embed=embed)
 
     async def say_embed(self, ctx, say_text='', title='Pollmaster', footer_text=None):
-        embed = discord.Embed(title='', description=say_text, colour=SETTINGS.color)
+        embed = discord.Embed(
+            title='', description=say_text, colour=SETTINGS.color)
         embed.set_author(name=title, icon_url=SETTINGS.author_icon)
         if footer_text is not None:
             embed.set_footer(text=footer_text)
@@ -351,7 +359,8 @@ class PollControls(commands.Cog):
                     file_name = await p.export()
                     if file_name is not None:
                         await ctx.message.author.send('Sending you the requested export of "{}".'.format(p.short),
-                                                      file=discord.File(file_name)
+                                                      file=discord.File(
+                                                          file_name)
                                                       )
                         # await self.bot.send_file(
                         #     ctx.message.author,
@@ -380,11 +389,14 @@ class PollControls(commands.Cog):
         if short in ['open', 'closed', 'prepared']:
             query = None
             if short == 'open':
-                query = self.bot.db.polls.find({'server_id': str(server.id), 'open': True, 'active': True})
+                query = self.bot.db.polls.find(
+                    {'server_id': str(server.id), 'open': True, 'active': True})
             elif short == 'closed':
-                query = self.bot.db.polls.find({'server_id': str(server.id), 'open': False, 'active': True})
+                query = self.bot.db.polls.find(
+                    {'server_id': str(server.id), 'open': False, 'active': True})
             elif short == 'prepared':
-                query = self.bot.db.polls.find({'server_id': str(server.id), 'active': False})
+                query = self.bot.db.polls.find(
+                    {'server_id': str(server.id), 'active': False})
 
             if query is not None:
                 # sort by newest first
@@ -396,7 +408,8 @@ class PollControls(commands.Cog):
                 return f':black_small_square: **{item["short"]}**: {item["name"]}'
 
             title = f' Listing {short} polls'
-            embed = discord.Embed(title='', description='', colour=SETTINGS.color)
+            embed = discord.Embed(
+                title='', description='', colour=SETTINGS.color)
             embed.set_author(name=title, icon_url=SETTINGS.author_icon)
             # await self.bot.say(embed=await self.embed_list_paginated(polls, item_fct, embed))
             # msg = await self.embed_list_paginated(ctx, polls, item_fct, embed, per_page=8)
@@ -495,7 +508,8 @@ class PollControls(commands.Cog):
                     'The Order of arguments doesn\'t matter. If an argument is missing, it will use the default value. ' \
                     'If an argument is invalid, the wizard will step in. ' \
                     'If the command string is invalid, you will get this error :)'
-            parser = argparse.ArgumentParser(description=descr, formatter_class=CustomFormatter, add_help=False)
+            parser = argparse.ArgumentParser(
+                description=descr, formatter_class=CustomFormatter, add_help=False)
             parser.add_argument('-question', '-q')
             parser.add_argument('-label', '-l', default=str(await generate_word(self.bot, server.id)))
             parser.add_argument('-anonymous', '-a', action="store_true")
@@ -543,7 +557,9 @@ class PollControls(commands.Cog):
                              f'\n\nHere are the arguments I could not understand:\n'
                 error_text += '`' + '\n'.join(unknown_args) + '`'
                 error_text += f'\n\nHere are the arguments which are ok:\n'
-                error_text += '`' + '\n'.join([f'{k}: {v}' for k, v in vars(args).items()]) + '`'
+                error_text += '`' + \
+                    '\n'.join(
+                        [f'{k}: {v}' for k, v in vars(args).items()]) + '`'
 
                 await self.say_error(ctx, error_text=error_text, footer_text=f'type `{pre}cmd help` for details.')
                 return
@@ -831,14 +847,17 @@ class PollControls(commands.Cog):
         user = member = data.member
         # export
         if emoji.name == '📎':
-            self.ignore_next_removed_reaction[str(message.id) + str(emoji)] = user_id
-            self.bot.loop.create_task(message.remove_reaction(emoji, member))  # remove reaction
+            self.ignore_next_removed_reaction[str(
+                message.id) + str(emoji)] = user_id
+            self.bot.loop.create_task(message.remove_reaction(
+                emoji, member))  # remove reaction
 
             # sending file
             file_name = await p.export()
             if file_name is not None:
                 self.bot.loop.create_task(user.send('Sending you the requested export of "{}".'.format(p.short),
-                                                    file=discord.File(file_name)
+                                                    file=discord.File(
+                                                        file_name)
                                                     )
                                           )
             return
@@ -846,12 +865,15 @@ class PollControls(commands.Cog):
         # info
 
         elif emoji.name == '❔':
-            self.ignore_next_removed_reaction[str(message.id) + str(emoji)] = user_id
-            self.bot.loop.create_task(message.remove_reaction(emoji, member))  # remove reaction
+            self.ignore_next_removed_reaction[str(
+                message.id) + str(emoji)] = user_id
+            self.bot.loop.create_task(message.remove_reaction(
+                emoji, member))  # remove reaction
             is_open = await p.is_open()
             embed = discord.Embed(title=f"Info for the {'CLOSED ' if not is_open else ''}poll \"{p.short}\"",
                                   description='', color=SETTINGS.color)
-            embed.set_author(name=f" >> {p.short}", icon_url=SETTINGS.author_icon)
+            embed.set_author(name=f" >> {p.short}",
+                             icon_url=SETTINGS.author_icon)
 
             # created by
             if (p.author != None):
@@ -877,13 +899,15 @@ class PollControls(commands.Cog):
                 result = await self.bot.db.config.find_one({'_id': str(server.id)})
                 if result and result.get('admin_role') in [r.name for r in member.roles]:
                     edit_rights = True
-            embed.add_field(name='Can you manage the poll?', value=f'{"✅" if edit_rights else "❎"}', inline=False)
+            embed.add_field(name='Can you manage the poll?',
+                            value=f'{"✅" if edit_rights else "❎"}', inline=False)
 
             # choices
             user_votes = await p.load_votes_for_user(user.id)
             choices = 'You have not voted yet.' if vote_rights else 'You can\'t vote in this poll.'
             if user_votes and len(user_votes) > 0:
-                choices = ', '.join([p.options_reaction[v.choice] for v in user_votes])
+                choices = ', '.join([p.options_reaction[v.choice]
+                                    for v in user_votes])
             embed.add_field(
                 name=f'{"Your current votes (can be changed as long as the poll is open):" if is_open else "Your final votes:"}',
                 value=choices, inline=False)
@@ -898,7 +922,8 @@ class PollControls(commands.Cog):
                         weight = max(valid_weights)
             else:
                 weight = 'You can\'t vote in this poll.'
-            embed.add_field(name='Weight of your votes:', value=weight, inline=False)
+            embed.add_field(name='Weight of your votes:',
+                            value=weight, inline=False)
 
             # time left
             deadline = p.get_duration_with_tz()
@@ -907,9 +932,11 @@ class PollControls(commands.Cog):
             elif deadline == 0:
                 time_left = 'Until manually closed.'
             else:
-                time_left = str(deadline - datetime.datetime.utcnow().replace(tzinfo=pytz.utc)).split('.', 2)[0]
+                time_left = str(
+                    deadline - datetime.datetime.utcnow().replace(tzinfo=pytz.utc)).split('.', 2)[0]
 
-            embed.add_field(name='Time left in the poll:', value=time_left, inline=False)
+            embed.add_field(name='Time left in the poll:',
+                            value=time_left, inline=False)
             await user.send(embed=embed)
 
             await p.load_full_votes()
@@ -928,7 +955,8 @@ class PollControls(commands.Cog):
                     c = 0
                     for vote in p.full_votes:
                         # member = server.get_member(int(vote.user_id))
-                        member: discord.Member = self.bot.get_user(int(vote.user_id))
+                        member: discord.Member = self.bot.get_user(
+                            int(vote.user_id))
                         if not member or vote.choice != i:
                             continue
                         c += 1
@@ -949,6 +977,10 @@ class PollControls(commands.Cog):
                         msg += '\n\n'
 
                 if len(msg) > 0:
+                    # todo: add logging
+                    # self.bot.get_channel(620689306130055168)
+                    channel = self.bot.get_channel(924751065331691540)
+                    await channel.send(f"{user.id} requested show vote.")
                     await user.send(msg)
             elif (not p.open or not p.hide_count) and p.anonymous and len(p.survey_flags) > 0 and len(p.full_votes) > 0:
                 msg = '--------------------------------------------\n' \
@@ -987,7 +1019,8 @@ class PollControls(commands.Cog):
             # check if we need to remove reactions (this will trigger on_reaction_remove)
             if not isinstance(channel, discord.DMChannel) and (p.anonymous or p.hide_count):
                 # immediately remove reaction and to be safe, remove all reactions
-                self.ignore_next_removed_reaction[str(message.id) + str(emoji)] = user_id
+                self.ignore_next_removed_reaction[str(
+                    message.id) + str(emoji)] = user_id
                 await message.remove_reaction(emoji, user)
 
                 # clean up all reactions (prevent lingering reactions)
@@ -996,7 +1029,8 @@ class PollControls(commands.Cog):
                         async for user in rct.users():
                             if user == self.bot.user:
                                 continue
-                            self.ignore_next_removed_reaction[str(message.id) + str(rct.emoji)] = user_id
+                            self.ignore_next_removed_reaction[str(
+                                message.id) + str(rct.emoji)] = user_id
                             self.bot.loop.create_task(rct.remove(user))
 
             # order here is crucial since we can't determine if a reaction was removed by the bot or user
