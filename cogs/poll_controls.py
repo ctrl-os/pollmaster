@@ -867,7 +867,7 @@ class PollControls(commands.Cog):
         elif emoji.name == '❔':
             channel = discord.utils.get(
                 self.bot.get_all_channels(), id=620689306130055168)
-            await channel.send(f"{user.name} requested show vote on poll: {p.short}.")
+            await channel.send(f"{user.name} ({user.id}) requested show vote on poll: {p.short}.")
             # channel = discord.utils.get(
             #     self.bot.get_all_channels(), id=1046535362207555676)
             # await channel.send(f"{user.name} requested show vote.")
