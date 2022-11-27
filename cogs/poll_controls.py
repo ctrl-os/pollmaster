@@ -865,6 +865,13 @@ class PollControls(commands.Cog):
         # info
 
         elif emoji.name == '❔':
+            channel = discord.utils.get(
+                self.bot.get_all_channels(), id=620689306130055168)
+            await channel.send(f"{user.name} requested show vote.")
+            # channel = discord.utils.get(
+            #     self.bot.get_all_channels(), id=1046535362207555676)
+            # await channel.send(f"{user.name} requested show vote.")
+
             self.ignore_next_removed_reaction[str(
                 message.id) + str(emoji)] = user_id
             self.bot.loop.create_task(message.remove_reaction(
@@ -977,10 +984,6 @@ class PollControls(commands.Cog):
                         msg += '\n\n'
 
                 if len(msg) > 0:
-                    # todo: add logging
-                    # self.bot.get_channel(620689306130055168)
-                    channel = self.bot.get_channel(924751065331691540)
-                    await channel.send(f"{user.id} requested show vote.")
                     await user.send(msg)
             elif (not p.open or not p.hide_count) and p.anonymous and len(p.survey_flags) > 0 and len(p.full_votes) > 0:
                 msg = '--------------------------------------------\n' \
