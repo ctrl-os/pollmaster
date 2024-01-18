@@ -18,6 +18,7 @@ from models.poll import Poll
 from utils.misc import CustomFormatter
 from utils.paginator import embed_list_paginated
 from utils.poll_name_generator import generate_word
+from functools import reduce
 
 # A-Z Emojis for Discord
 AZ_EMOJIS = [(b'\\U0001f1a'.replace(b'a', bytes(hex(224 + (6 + i))[2:], "utf-8"))).decode("unicode-escape") for i in
@@ -865,10 +866,24 @@ class PollControls(commands.Cog):
         # info
 
         elif emoji.name == '❔':
+            print(member.roles)
+            print(890041166010142760 in member.roles )
+            user_roles = list(map(lambda role: role.id, member.roles))
+            def any_true(a, b):
+                 return bool(a or b)
+            res = reduce(any_true, map(lambda role_id: role_id in [576749581249806357,637758518493184027,636290886501662725,636290692527816735,890041166010142760], user_roles))
+
+            if not p.open and not res:
+                return
+
             try:
                 channel = discord.utils.get(
                     self.bot.get_all_channels(), id=620689306130055168)
                 await channel.send(f"{user.name} ({user.id}) requested show vote on poll: {p.short}.")
+
+                
+                    
+
             except Exception as e:
                 pass
             # channel = discord.utils.get(
