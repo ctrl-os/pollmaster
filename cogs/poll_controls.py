@@ -960,7 +960,7 @@ class PollControls(commands.Cog):
                             msg += AZ_EMOJIS[i] + " "
                         msg += "**" + o + ":**"
                     c = 0
-                    for vote in p.full_votes:
+                    for vote in random.shuffle(p.full_votes):
                         # member = server.get_member(int(vote.user_id))
                         member: discord.Member = self.bot.get_user(
                             int(vote.user_id))
