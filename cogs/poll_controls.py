@@ -865,9 +865,12 @@ class PollControls(commands.Cog):
         # info
 
         elif emoji.name == '❔':
-            channel = discord.utils.get(
-                self.bot.get_all_channels(), id=620689306130055168)
-            await channel.send(f"{user.name} ({user.id}) requested show vote on poll: {p.short}.")
+            try:
+                channel = discord.utils.get(
+                    self.bot.get_all_channels(), id=620689306130055168)
+                await channel.send(f"{user.name} ({user.id}) requested show vote on poll: {p.short}.")
+            except Exception as e:
+                pass
             # channel = discord.utils.get(
             #     self.bot.get_all_channels(), id=1046535362207555676)
             # await channel.send(f"{user.name} requested show vote.")
@@ -950,15 +953,72 @@ class PollControls(commands.Cog):
             # await p.load_vote_counts()
             await p.load_unique_participants()
             # send current details of who currently voted for what
-            if not p.anonymous and len(p.full_votes) > 0:
+            if not p.anonymous and len(p.full_votes) > 0 and p.open:
                 msg = '--------------------------------------------\n' \
                       'VOTES\n' \
                       '--------------------------------------------\n'
                 votes = p.options_reaction
+                c = 0
+                for vote in p.full_votes:
+                    # member = server.get_member(int(vote.user_id))
+                    member: discord.Member = self.bot.get_user(
+                        int(vote.user_id))
+                    
+                    if not member:
+                        continue
+                    c += 1
+                    name = member.display_name
+                    if not name:
+                        name = member.name
+                    if not name:
+                        name = "<Deleted User>"
+                    msg += f'\n{name}'
+                    if len(msg) > 1500:
+                        await user.send(msg)
+                        msg = ''
+                if len(p.full_votes) == 0 and (not p.hide_count or not p.open):
+                    msg += '\nNo votes for this option yet.'
                 if not p.hide_count or not p.open:
-                    votes = random.shuffle(p.options_reaction)
+                    msg += '\n\n'
 
-                for i, o in enumerate(votes):
+                if len(msg) > 0:
+                    await user.send(msg)
+                return
+            elif (not p.open or not p.hide_count) and p.anonymous and len(p.survey_flags) > 0 and len(p.full_votes) > 0:
+                msg = '--------------------------------------------\n' \
+                      'Custom Answers (Anonymous)\n' \
+                      '--------------------------------------------\n'
+                has_answers = False
+                for i, o in enumerate(p.options_reaction):
+                    if i not in p.survey_flags:
+                        continue
+                    custom_answers = ''
+                    for vote in p.full_votes:
+                        if vote.choice == i:
+                            has_answers = True
+                            custom_answers += f'\n{vote.answer}'
+                    if len(custom_answers) > 0:
+                        if not p.options_reaction_emoji_only:
+                            msg += AZ_EMOJIS[i] + " "
+                        msg += "**" + o + ":**"
+                        msg += custom_answers
+                        msg += '\n\n'
+                    if len(msg) > 1500:
+                        await user.send(msg)
+                        msg = ''
+                if has_answers and len(msg) > 0:
+                    await user.send(msg)
+                return
+            elif not p.anonymous and len(p.full_votes) > 0 and not p.open:
+                msg = '--------------------------------------------\n' \
+                      'VOTES\n' \
+                      '--------------------------------------------\n'
+                votes = p.options_reaction
+
+                print("hi")
+                print(votes)
+                print(p.full_votes)
+                for i, o in enumerate(p.options_reaction):
                     if not p.hide_count or not p.open:
                         if not p.options_reaction_default and not p.options_reaction_emoji_only:
                             msg += AZ_EMOJIS[i] + " "
@@ -968,7 +1028,7 @@ class PollControls(commands.Cog):
                         # member = server.get_member(int(vote.user_id))
                         member: discord.Member = self.bot.get_user(
                             int(vote.user_id))
-                        if not member or vote.choice != i:
+                        if not member or (vote.choice != i):
                             continue
                         c += 1
                         name = member.display_name
