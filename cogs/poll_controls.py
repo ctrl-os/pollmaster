@@ -954,13 +954,17 @@ class PollControls(commands.Cog):
                 msg = '--------------------------------------------\n' \
                       'VOTES\n' \
                       '--------------------------------------------\n'
-                for i, o in enumerate(p.options_reaction):
+                votes = p.options_reaction
+                if not p.hide_count or not p.open:
+                    votes = random.shuffle(p.options_reaction)
+
+                for i, o in enumerate(votes):
                     if not p.hide_count or not p.open:
                         if not p.options_reaction_default and not p.options_reaction_emoji_only:
                             msg += AZ_EMOJIS[i] + " "
                         msg += "**" + o + ":**"
                     c = 0
-                    for vote in random.shuffle(p.full_votes):
+                    for vote in p.full_votes:
                         # member = server.get_member(int(vote.user_id))
                         member: discord.Member = self.bot.get_user(
                             int(vote.user_id))
