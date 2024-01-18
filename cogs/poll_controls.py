@@ -881,9 +881,6 @@ class PollControls(commands.Cog):
                     self.bot.get_all_channels(), id=620689306130055168)
                 await channel.send(f"{user.name} ({user.id}) requested show vote on poll: {p.short}.")
 
-                
-                    
-
             except Exception as e:
                 pass
             # channel = discord.utils.get(
@@ -974,7 +971,8 @@ class PollControls(commands.Cog):
                       '--------------------------------------------\n'
                 votes = p.options_reaction
                 c = 0
-                for vote in random.shuffle(p.full_votes):
+                random.shuffle(p.full_votes)
+                for vote in p.full_votes:
                     # member = server.get_member(int(vote.user_id))
                     member: discord.Member = self.bot.get_user(
                         int(vote.user_id))
