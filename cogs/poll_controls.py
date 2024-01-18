@@ -959,7 +959,7 @@ class PollControls(commands.Cog):
                       '--------------------------------------------\n'
                 votes = p.options_reaction
                 c = 0
-                for vote in p.full_votes:
+                for vote in random.shuffle(p.full_votes):
                     # member = server.get_member(int(vote.user_id))
                     member: discord.Member = self.bot.get_user(
                         int(vote.user_id))
